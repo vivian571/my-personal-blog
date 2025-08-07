@@ -10,7 +10,7 @@ async function getPosts() {
 
   const posts = filenames.map((filename) => {
     const filePath = path.join(postsDirectory, filename);
-    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
 
     return {

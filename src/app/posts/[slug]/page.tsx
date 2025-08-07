@@ -39,7 +39,7 @@ async function getPostData(slug: string): Promise<PostData> {
   const fullPath = path.join(postsDirectory, `${slug}.md`);
 
   try {
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, 'utf8').replace(/^\uFEFF/, '');
     const matterResult = matter(fileContents);
 
     const processedContent = await remark()
