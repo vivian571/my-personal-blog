@@ -72,6 +72,7 @@ async function getPostData(slug: string): Promise<PostData> {
 // 生成页面的元数据
 export async function generateMetadata(
   { params }: Props,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
   const postData = await getPostData(params.slug);
