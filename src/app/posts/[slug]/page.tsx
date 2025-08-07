@@ -3,9 +3,10 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
-import { Metadata } from 'next';
+import { Metadata, ResolvingMetadata } from 'next';
 import styles from '../../page.module.css';
 
+// 定义文章数据的结构
 interface PostData {
   title: string;
   date: string;
@@ -13,61 +14,74 @@ interface PostData {
   slug: string;
 }
 
-interface PostPageProps {
-  params: {
-    slug: string;
-  };
+// 定义页面组件的 props 类型，符合 Next.js App Router 规范
+interface Props {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
+// 生成所有可能的文章路径
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   try {
     const filenames = fs.readdirSync(postsDirectory);
-    return filenames.map((filename) => ({
-      slug: filename.replace(/\.md$/, ''),
-    }));
+    return filenames
+      .filter(filename => filename.endsWith('.md'))
+      .map((filename) => ({
+        slug: filename.replace(/\.md$/, ''),
+      }));
   } catch (error) {
-    console.error('Error reading posts directory:', error);
+    // 如果 posts 目录不存在，则返回空数组，避免构建失败
+    console.warn('Could not read posts directory, maybe it does not exist yet.', error);
     return [];
   }
 }
 
+// 根据 slug 获取文章数据
 async function getPostData(slug: string): Promise<PostData> {
   const fullPath = path.join(postsDirectory, `${slug}.md`);
-  if (!fs.existsSync(fullPath)) {
+
+  try {
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const matterResult = matter(fileContents);
+
+    const processedContent = await remark()
+      .use(html)
+      .process(matterResult.content);
+    const contentHtml = processedContent.toString();
+
     return {
-      title: 'Post Not Found',
-      date: '',
-      contentHtml: '<p>Sorry, this post does not exist.</p>',
       slug,
+      contentHtml,
+      title: matterResult.data.title || 'Untitled Post',
+      date: matterResult.data.date || new Date().toISOString(),
+    };
+  } catch (error) {
+    // 如果文件读取失败，返回一个明确的错误文章
+    console.error(`Failed to load post ${slug}:`, error);
+    return {
+      slug,
+      title: 'Post Not Found',
+      date: new Date().toISOString(),
+      contentHtml: '<p>Sorry, the requested post could not be found.</p>',
     };
   }
-
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
-  const matterResult = matter(fileContents);
-
-  const processedContent = await remark()
-    .use(html)
-    .process(matterResult.content);
-  const contentHtml = processedContent.toString();
-
-  return {
-    slug,
-    contentHtml,
-    title: matterResult.data.title || 'Untitled Post',
-    date: matterResult.data.date || new Date().toISOString(),
-  };
 }
 
-export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+// 生成页面的元数据
+export async function generateMetadata(
+  { params }: Props,
+  _parent: ResolvingMetadata
+): Promise<Metadata> {
   const postData = await getPostData(params.slug);
   return {
     title: postData.title,
   };
 }
 
-export default async function Post({ params }: PostPageProps) {
+// 博客文章页面组件
+export default async function Post({ params }: Props) {
   const postData = await getPostData(params.slug);
 
   return (
