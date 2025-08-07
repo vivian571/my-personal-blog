@@ -14,11 +14,7 @@ interface PostData {
   slug: string;
 }
 
-// 定义页面组件的 props 类型，符合 Next.js App Router 规范
-interface Props {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
@@ -71,7 +67,7 @@ async function getPostData(slug: string): Promise<PostData> {
 
 // 生成页面的元数据
 export async function generateMetadata(
-  { params }: Props,
+  { params }: { params: { slug: string } },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
@@ -82,7 +78,7 @@ export async function generateMetadata(
 }
 
 // 博客文章页面组件
-export default async function Post({ params }: Props) {
+export default async function Post({ params }: { params: { slug: string } }) {
   const postData = await getPostData(params.slug);
 
   return (
