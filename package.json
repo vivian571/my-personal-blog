@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build && next export",
+    "preview": "next build && next start",
+    "deploy": "npm run build && git add . && git commit -m 'Update blog' && git push"
   },
   "dependencies": {
     "bootstrap": "^5.3.7",
