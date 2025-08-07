@@ -14,7 +14,8 @@ async function getPosts() {
     const { data } = matter(fileContents);
 
     return {
-      slug: filename.replace(/\.md$/, ''),
+      id: filename.replace(/\.md$/, ''),
+      slug: data.slug || filename.replace(/\.md$/, ''),
       title: data.title || 'Untitled Post',
       date: data.date || 'No date',
     };

@@ -3,7 +3,6 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
-import { Metadata, ResolvingMetadata } from 'next';
 import styles from '../../page.module.css';
 
 // 定义文章数据的结构
@@ -14,29 +13,35 @@ interface PostData {
   slug: string;
 }
 
-
-
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 // 生成所有可能的文章路径
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  try {
-    const filenames = fs.readdirSync(postsDirectory);
-    return filenames
-      .filter(filename => filename.endsWith('.md'))
-      .map((filename) => ({
-        slug: filename.replace(/\.md$/, ''),
-      }));
-  } catch (error) {
-    // 如果 posts 目录不存在，则返回空数组，避免构建失败
-    console.warn('Could not read posts directory, maybe it does not exist yet.', error);
-    return [];
-  }
+export async function generateStaticParams() {
+  const filenames = fs.readdirSync(postsDirectory);
+  const slugs = filenames.map((filename) => {
+    const filePath = path.join(postsDirectory, filename);
+    const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
+    const { data } = matter(fileContents);
+    return { slug: data.slug };
+  });
+  return slugs.filter(item => item.slug);
 }
 
 // 根据 slug 获取文章数据
-async function getPostData(slug: string): Promise<PostData> {
-  const fullPath = path.join(postsDirectory, `${slug}.md`);
+async function getPostData(slug: string): Promise<PostData | null> {
+  const filenames = fs.readdirSync(postsDirectory);
+  const filename = filenames.find(fname => {
+    const filePath = path.join(postsDirectory, fname);
+    const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
+    const { data } = matter(fileContents);
+    return data.slug === slug;
+  });
+
+  if (!filename) {
+    return null;
+  }
+
+  const fullPath = path.join(postsDirectory, filename);
 
   try {
     const fileContents = fs.readFileSync(fullPath, 'utf8').replace(/^\uFEFF/, '');
@@ -66,22 +71,31 @@ async function getPostData(slug: string): Promise<PostData> {
 }
 
 // 生成页面的元数据
-export async function generateMetadata(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { params }: { params: any },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
   const postData = await getPostData(params.slug);
+  if (!postData) {
+    return {
+      title: 'Post Not Found',
+    };
+  }
   return {
     title: postData.title,
   };
 }
 
 // 博客文章页面组件
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function Post({ params }: { params: any }) {
+
+export default async function Post({ params }: { params: { slug: string } }) {
   const postData = await getPostData(params.slug);
+
+  if (!postData) {
+    return (
+      <div>
+        <h1>Post Not Found</h1>
+        <p>Sorry, the requested post could not be found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
