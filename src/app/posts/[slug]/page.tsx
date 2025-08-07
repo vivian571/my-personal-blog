@@ -3,12 +3,10 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { Metadata } from 'next';
 import styles from '../../page.module.css';
 
-type Props = {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
+
 
 // 定义文章数据的结构
 interface PostData {
@@ -76,7 +74,11 @@ async function getPostData(slug: string): Promise<PostData | null> {
 }
 
 // 生成页面的元数据
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
   const postData = await getPostData(params.slug);
   if (!postData) {
     return {
@@ -90,7 +92,11 @@ export async function generateMetadata({ params }: Props) {
 
 // 博客文章页面组件
 
-export default async function Post({ params }: Props) {
+export default async function Post({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const postData = await getPostData(params.slug);
 
   if (!postData) {
