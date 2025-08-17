@@ -6,9 +6,7 @@ import html from 'remark-html';
 import { Metadata } from 'next';
 import styles from '../../page.module.css';
 
-
-
-// 定义文章数据的结构
+// 定义文章数据结构
 interface PostData {
   title: string;
   date: string;
@@ -16,97 +14,73 @@ interface PostData {
   slug: string;
 }
 
+type Params = {
+  slug: string;
+};
+
+type Props = {
+  params: Params;
+};
+
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 // 生成所有可能的文章路径
 export async function generateStaticParams() {
   const filenames = fs.readdirSync(postsDirectory);
-  const slugs = filenames.map((filename) => {
+
+  return filenames.map((filename) => {
     const filePath = path.join(postsDirectory, filename);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
-    return { slug: data.slug };
+    
+    return {
+      slug: data.slug || filename.replace(/\.md$/, '')
+    };
   });
-  return slugs.filter(item => item.slug);
 }
 
 // 根据 slug 获取文章数据
-async function getPostData(slug: string): Promise<PostData | null> {
+async function getPostData(slug: string): Promise<PostData> {
   const filenames = fs.readdirSync(postsDirectory);
   const filename = filenames.find(fname => {
     const filePath = path.join(postsDirectory, fname);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
-    return data.slug === slug;
+    return (data.slug || fname.replace(/\.md$/, '')) === slug;
   });
 
   if (!filename) {
-    return null;
+    throw new Error(`Post with slug "${slug}" not found`);
   }
 
   const fullPath = path.join(postsDirectory, filename);
+  const fileContents = fs.readFileSync(fullPath, 'utf8').replace(/^\uFEFF/, '');
+  const matterResult = matter(fileContents);
 
-  try {
-    const fileContents = fs.readFileSync(fullPath, 'utf8').replace(/^\uFEFF/, '');
-    const matterResult = matter(fileContents);
+  const processedContent = await remark()
+    .use(html)
+    .process(matterResult.content);
+  const contentHtml = processedContent.toString();
 
-    const processedContent = await remark()
-      .use(html)
-      .process(matterResult.content);
-    const contentHtml = processedContent.toString();
-
-    return {
-      slug,
-      contentHtml,
-      title: matterResult.data.title || 'Untitled Post',
-      date: matterResult.data.date || new Date().toISOString(),
-    };
-  } catch (error) {
-    // 如果文件读取失败，返回一个明确的错误文章
-    console.error(`Failed to load post ${slug}:`, error);
-    return {
-      slug,
-      title: 'Post Not Found',
-      date: new Date().toISOString(),
-      contentHtml: '<p>Sorry, the requested post could not be found.</p>',
-    };
-  }
+  return {
+    slug,
+    contentHtml,
+    title: matterResult.data.title || 'Untitled Post',
+    date: matterResult.data.date || new Date().toISOString(),
+  };
 }
 
-// 生成页面的元数据
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+// 生成页面元数据
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const postData = await getPostData(params.slug);
-  if (!postData) {
-    return {
-      title: 'Post Not Found',
-    };
-  }
   return {
     title: postData.title,
   };
 }
 
-// 博客文章页面组件
-
-export default async function Post({
-  params,
-}: {
-  params: { slug: string };
-}) {
+// 页面组件
+export default async function PostPage({ params }: Props) {
   const postData = await getPostData(params.slug);
-
-  if (!postData) {
-    return (
-      <div>
-        <h1>Post Not Found</h1>
-        <p>Sorry, the requested post could not be found.</p>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.page}>

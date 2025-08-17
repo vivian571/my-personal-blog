@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   // 如果您要部署到 GitHub Pages 子目录，取消下面的注释
-  // basePath: '/my-personal-blog',
+    basePath: '/my-personal-blog',
   // 如果您使用动态路由，取消下面的注释
   // trailingSlash: true,
   // 可选：生成静态页面时不生成 .html 扩展名

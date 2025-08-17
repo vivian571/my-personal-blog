@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Personal Blog
 
-## Getting Started
+这是一个基于 Next.js 构建的现代化、高性能个人博客项目。内容通过简单的 Markdown 文件进行管理，旨在提供一个优雅的写作和阅读平台。
 
-First, run the development server:
+## ✨ 项目理念
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+遵循从“静态页面”到“动态应用”的演进策略，首先建立一个稳定、快速的静态博客，并为其未来扩展为全栈应用打下坚实的基础。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 技术栈
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **框架**: [Next.js](https://nextjs.org/) (React 框架)
+*   **UI**: [React](https://react.dev/) & [Bootstrap](https://getbootstrap.com/)
+*   **语言**: [TypeScript](https://www.typescriptlang.org/)
+*   **Markdown处理**: [gray-matter](https://github.com/jonschlinkert/gray-matter), [remark](https://github.com/remarkjs/remark), [remark-html](https://github.com/remarkjs/remark-html)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✍️ 如何发表一篇新文章
 
-## Learn More
+发表一篇新文章非常简单：
 
-To learn more about Next.js, take a look at the following resources:
+1.  在项目根目录的 `posts` 文件夹中，创建一个新的 `.md` 文件（例如 `my-new-post.md`）。
+2.  在文件顶部，按照以下格式添加元数据 (frontmatter)：
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    ```markdown
+    ---
+    title: '这是我的新文章标题'
+    date: '2024-08-18'
+    ---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    这里是你的文章正文，使用 Markdown 语法书写...
+    ```
 
-## Deploy on Vercel
+3.  保存文件，然后重新启动开发服务器或部署项目即可看到新文章。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ 本地开发
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **安装依赖**:
+    ```bash
+    npm install
+    ```
+
+2.  **启动开发服务器**:
+    ```bash
+    npm run dev
+    ```
+
+3.  在浏览器中打开 [http://localhost:3000](http://localhost:3000) 查看效果。
+
+## 部署
+
+本项目配置了通过 GitHub Actions 自动部署到 GitHub Pages 的流程。您只需要将代码推送到 `main` 分支，部署就会自动触发。

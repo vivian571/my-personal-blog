@@ -1,0 +1,33 @@
+# GitHub Pages 部署工作流
+# 这个工作流会在每次推送到 main 分支时自动执行
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # 只在 main 分支上触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # 使用最新的 Ubuntu 环境
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3 # 第一步：拉取你的代码
+
+      - name: Setup Node.js 🏗️
+        uses: actions/setup-node@v3 # 第二步：设置 Node.js 环境
+        with:
+          node-version: '20' # 使用 Node.js 20
+
+      - name: Install Dependencies 📦
+        run: npm install # 第三步：安装项目依赖
+
+      - name: Build Project 🔨
+        run: npm run export # 第四步：构建并导出静态文件
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: peaceiris/actions-gh-pages@v3 # 第五步：部署到 GitHub Pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out # Next.js 静态导出的目录
