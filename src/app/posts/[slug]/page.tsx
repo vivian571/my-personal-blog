@@ -22,15 +22,28 @@ type Props = {
   params: Promise<Params>;
 };
 
+function getAllFiles(dirPath, arrayOfFiles) {
+  const files = fs.readdirSync(dirPath);
+  arrayOfFiles = arrayOfFiles || [];
+  files.forEach(function(file) {
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
+    } else if (file.endsWith(".md")) {
+      arrayOfFiles.push(fullPath);
+    }
+  });
+  return arrayOfFiles;
+}
+
 const postsDirectory = path.join(process.cwd(), 'posts');
 
 // 生成所有可能的文章路径
 export async function generateStaticParams() {
   if (!fs.existsSync(postsDirectory)) return [];
-  const filenames = fs.readdirSync(postsDirectory);
-
-  return filenames.map((filename) => {
-    const filePath = path.join(postsDirectory, filename);
+  const filePaths = getAllFiles(postsDirectory);
+  return filePaths.map((filePath) => {
+    const filename = path.basename(filePath);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
     
@@ -44,19 +57,19 @@ export async function generateStaticParams() {
 async function getPostData(slug: string): Promise<PostData> {
   slug = decodeURIComponent(slug);
   if (!fs.existsSync(postsDirectory)) throw new Error("Posts directory not found");
-  const filenames = fs.readdirSync(postsDirectory);
-  const filename = filenames.find(fname => {
-    const filePath = path.join(postsDirectory, fname);
+  const filePaths = getAllFiles(postsDirectory);
+  const fullPath = filePaths.find(filePath => {
+    const fname = path.basename(filePath);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
     return (data.slug || fname.replace(/\.md$/, '')) === slug;
   });
 
-  if (!filename) {
+  if (!fullPath) {
     throw new Error(`Post with slug "${slug}" not found`);
   }
 
-  const fullPath = path.join(postsDirectory, filename);
+  // const fullPath = fullPath;
   const fileContents = fs.readFileSync(fullPath, 'utf8').replace(/^\uFEFF/, '');
   const matterResult = matter(fileContents);
 

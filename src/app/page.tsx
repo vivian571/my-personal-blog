@@ -4,22 +4,32 @@ import path from 'path';
 import matter from 'gray-matter';
 import React from 'react';
 
-async function getPosts() {
-  const postsDirectory = path.join(process.cwd(), 'posts');
-  // 确保目录存在
-  if (!fs.existsSync(postsDirectory)) {
-    return [];
-  }
-  const filenames = fs.readdirSync(postsDirectory);
+function getAllFiles(dirPath, arrayOfFiles) {
+  const files = fs.readdirSync(dirPath);
+  arrayOfFiles = arrayOfFiles || [];
+  files.forEach(function(file) {
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
+    } else if (file.endsWith(".md")) {
+      arrayOfFiles.push(fullPath);
+    }
+  });
+  return arrayOfFiles;
+}
 
-  const posts = filenames.map((filename) => {
-    const filePath = path.join(postsDirectory, filename);
+async function getPosts() {
+  const postsDirectory = path.join(process.cwd(), "posts");
+  if (!fs.existsSync(postsDirectory)) return [];
+  const filePaths = getAllFiles(postsDirectory);
+  const posts = filePaths.map((filePath) => {
+    // const filePath = filePath;
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
 
     return {
-      id: filename.replace(/\.md$/, ''),
-      slug: data.slug || filename.replace(/\.md$/, ''),
+      id: path.basename(filePath).replace(/\.md$/, ''),
+      slug: data.slug || path.basename(filePath).replace(/\.md$/, ''),
       title: data.title || 'Untitled Post',
       date: data.date ? data.date.toString() : 'No date',
     };
