@@ -2,10 +2,14 @@ import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import styles from './page.module.css';
+import React from 'react';
 
 async function getPosts() {
   const postsDirectory = path.join(process.cwd(), 'posts');
+  // 确保目录存在
+  if (!fs.existsSync(postsDirectory)) {
+    return [];
+  }
   const filenames = fs.readdirSync(postsDirectory);
 
   const posts = filenames.map((filename) => {
@@ -17,7 +21,7 @@ async function getPosts() {
       id: filename.replace(/\.md$/, ''),
       slug: data.slug || filename.replace(/\.md$/, ''),
       title: data.title || 'Untitled Post',
-      date: data.date || 'No date',
+      date: data.date ? data.date.toString() : 'No date',
     };
   });
 
@@ -28,29 +32,38 @@ export default async function Home() {
   const posts = await getPosts();
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <header className={styles.header}>
-          <h1>My Personal Blog</h1>
-          <p>A collection of my thoughts and writings.</p>
-        </header>
-        
-        <div className={styles.postList}>
-          <h2>Latest Posts</h2>
-          <ul>
-            {posts.map((post) => (
-              <li key={post.slug}>
-                <Link href={`/posts/${post.slug}`}>
-                  <h3>{post.title}</h3>
-                  <p>{post.date}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
+    <div className="max-w-4xl mx-auto px-4">
+      {/* AboutMe 模块 */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-4">关于我</h2>
+        <p className="text-gray-600 leading-relaxed max-w-2xl">
+          我在这里记录阅读过的书，分享对世界的观点，并致力于通过技术帮助更多人。
+        </p>
+      </section>
+
+      {/* 文章列表转 Grid 布局 */}
+      <section>
+        <h2 className="text-2xl font-bold mb-8">最新文章</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {posts.map((post) => (
+            <Link 
+              key={post.slug} 
+              href={`/posts/${post.slug}`}
+              className="group block p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+            >
+              <h3 className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors">
+                {post.title}
+              </h3>
+              <p className="text-sm text-gray-400">
+                {post.date}
+              </p>
+            </Link>
+          ))}
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <p>Powered by Next.js and your creativity.</p>
+      </section>
+
+      <footer className="mt-24 py-12 border-t border-gray-100 text-center text-gray-400 text-sm">
+        <p>意安序 © 2026</p>
       </footer>
     </div>
   );

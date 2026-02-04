@@ -1,6 +1,7 @@
 ---
 title: 项目全局分析与 Markdown 文件集成指南
 date: 2025-08-10
+slug: project-analysis-markdown-integration-guide
 tags: [项目文档, Markdown, 集成指南]
 status: published
 ---

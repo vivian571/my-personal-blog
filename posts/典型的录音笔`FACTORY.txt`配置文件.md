@@ -1,3 +1,9 @@
+---
+title: 典型的录音笔FACTORY.txt配置文件
+date: '2025-05-16'
+slug: factory-txt-config-guide
+---
+
 
 
 这是一个典型的录音笔`FACTORY.txt`配置文件，通过修改这些参数值可以改变录音笔的工作方式。
