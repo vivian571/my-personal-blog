@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: '/my-personal-blog',
+  // basePath: '/my-personal-blog',
   typescript: {
     ignoreBuildErrors: true,
   },
