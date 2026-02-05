@@ -5,6 +5,9 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import { Metadata } from 'next';
 import React from 'react';
+import { Share2, Bookmark, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 // 定义文章数据结构
 interface PostData {
@@ -36,12 +39,12 @@ function getAllFiles(dirPath, arrayOfFiles) {
   return arrayOfFiles;
 }
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const contentDirectory = path.join(process.cwd(), "content");
 
 // 生成所有可能的文章路径
 export async function generateStaticParams() {
-  if (!fs.existsSync(postsDirectory)) return [];
-  const filePaths = getAllFiles(postsDirectory);
+  if (!fs.existsSync(contentDirectory)) return [];
+  const filePaths = getAllFiles(contentDirectory);
   return filePaths.map((filePath) => {
     const filename = path.basename(filePath);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
@@ -56,8 +59,8 @@ export async function generateStaticParams() {
 // 根据 slug 获取文章数据
 async function getPostData(slug: string): Promise<PostData> {
   slug = decodeURIComponent(slug);
-  if (!fs.existsSync(postsDirectory)) throw new Error("Posts directory not found");
-  const filePaths = getAllFiles(postsDirectory);
+  if (!fs.existsSync(contentDirectory)) throw new Error("Posts directory not found");
+  const filePaths = getAllFiles(contentDirectory);
   const fullPath = filePaths.find(filePath => {
     const fname = path.basename(filePath);
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
@@ -101,23 +104,55 @@ export default async function PostPage(props: { params: Promise<Params> }) {
   const postData = await getPostData(slug);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto py-12">
+      <ReadingProgress />
+      <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-900 mb-8 transition-colors">
+        <ArrowLeft size={16} /> 返回首页
+      </Link>
+      
       <main>
-        <article className="prose prose-slate max-w-none">
-          <h1 className="text-4xl font-bold mb-4">{postData.title}</h1>
-          <div className="text-gray-400 mb-8">
-            {new Date(postData.date).toLocaleDateString('zh-CN', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
+        <article className="prose prose-slate max-w-none prose-headings:text-slate-900 prose-p:text-slate-600 prose-a:text-blue-600">
+          <header className="mb-12 space-y-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">{postData.title}</h1>
+            <div className="flex items-center gap-4 text-sm text-slate-400 font-medium">
+              <span>{new Date(postData.date).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</span>
+              <span>•</span>
+              <div className="flex items-center gap-3">
+                <button className="flex items-center gap-1.5 hover:text-slate-900 transition-colors">
+                  <Share2 size={14} /> 分享
+                </button>
+                <button className="flex items-center gap-1.5 hover:text-slate-900 transition-colors">
+                  <Bookmark size={14} /> 收藏
+                </button>
+              </div>
+            </div>
+          </header>
+
           <div
-            className="mt-8 leading-relaxed text-gray-800"
+            className="mt-8 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
           />
         </article>
       </main>
+
+      <footer className="mt-24 pt-12 border-t border-slate-100 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <button className="px-6 py-2 bg-slate-900 text-white rounded-full text-sm font-bold hover:bg-slate-800 transition-colors">
+            关注作者
+          </button>
+          <button className="px-6 py-2 border border-slate-200 rounded-full text-sm font-bold hover:bg-slate-50 transition-colors">
+            赞赏支持
+          </button>
+        </div>
+        <div className="flex items-center gap-2 text-slate-400">
+           <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Share2 size={20} /></button>
+           <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Bookmark size={20} /></button>
+        </div>
+      </footer>
     </div>
   );
 }

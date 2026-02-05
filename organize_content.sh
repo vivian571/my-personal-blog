@@ -60,7 +60,7 @@ categorize_file() {
     fi
     
     # 03_Order - tech-notes
-    if [[ "$lowercase" =~ (技术|代码|bug|debug|教程|tech|code|避坑) ]]; then
+    if [[ "$lowercase" =~ (技术|代码|bug|debug|教程|tech|code|避坑|爬取|视频) ]]; then
         echo "03_Order/tech-notes"
         return
     fi
