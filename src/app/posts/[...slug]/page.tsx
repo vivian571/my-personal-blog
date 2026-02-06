@@ -18,7 +18,7 @@ interface PostData {
 }
 
 type Params = {
-  slug: string;
+  slug: string[];
 };
 
 type Props = {
@@ -51,14 +51,14 @@ export async function generateStaticParams() {
     const { data } = matter(fileContents);
 
     return {
-      slug: data.slug || pathSlug
+      slug: (data.slug || pathSlug).split('/')
     };
   });
 }
 
 // 根据 slug 获取文章数据
-async function getPostData(slug: string): Promise<PostData> {
-  slug = decodeURIComponent(slug);
+async function getPostData(slugArray: string[]): Promise<PostData> {
+  const slug = decodeURIComponent(slugArray.join('/'));
   if (!fs.existsSync(contentDirectory)) throw new Error("Posts directory not found");
   const filePaths = getAllFiles(contentDirectory);
   const fullPath = filePaths.find(filePath => {
@@ -85,7 +85,7 @@ async function getPostData(slug: string): Promise<PostData> {
   return {
     slug,
     contentHtml,
-    title: matterResult.data.title || 'Untitled Post',
+    title: matterResult.data.title || matterResult.data.name || 'Untitled Post',
     date: matterResult.data.date ? matterResult.data.date.toString() : new Date().toISOString(),
   };
 }
