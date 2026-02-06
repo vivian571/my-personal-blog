@@ -3,12 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import React from "react";
 import "./globals.css";
-import { Library, MessageSquareText, Box, Home, Archive, Tag, User, Menu, MessageCircle } from "lucide-react";
+import { Library, MessageSquareText, Box, Home, Archive, Tag, User, Menu, MessageCircle, Cpu, Search as SearchIcon } from "lucide-react";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Search } from "@/components/Search";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -90,6 +91,10 @@ export default async function RootLayout({
                                 <ThemeToggle />
                             </div>
 
+                            <div className="px-4 mb-4">
+                                <Search />
+                            </div>
+
                             <nav className="flex-1 px-4 space-y-1">
                                 <NavItem href="/" icon={<Home size={18} />} label="首页" />
                                 <NavItem href="/archive" icon={<Archive size={18} />} label="归档" />
@@ -113,6 +118,7 @@ export default async function RootLayout({
 
                                 <div className="py-4">
                                     <p className="px-4 text-[10px] font-bold text-[var(--text-primary)]/40 uppercase tracking-wider mb-2">Discovery</p>
+                                    <NavItem href="/skills" icon={<Cpu size={18} />} label="Moltbot 技能" />
                                     <NavItem href="/library" icon={<Library size={18} />} label="书阁" />
                                     <NavItem href="/fragments" icon={<MessageSquareText size={18} />} label="思想碎片" />
                                     <NavItem href="/toolbox" icon={<Box size={18} />} label="万宝箱" />
@@ -134,14 +140,17 @@ export default async function RootLayout({
 
                         {/* Main Content */}
                         <main className="flex-1 overflow-auto bg-[var(--background)] transition-colors duration-300">
-                            <header className="md:hidden p-4 border-b border-[var(--sidebar-border)] flex justify-between items-center bg-[var(--sidebar)] sticky top-0 z-10 transition-colors duration-300">
-                                <Link href="/" className="font-bold text-lg text-[var(--text-primary)]">意安序</Link>
-                                <div className="flex items-center gap-2">
-                                    <ThemeToggle />
-                                    <button className="p-2 hover:bg-[var(--text-secondary)]/5 rounded-lg text-[var(--text-secondary)]">
-                                        <Menu size={20} />
-                                    </button>
+                            <header className="md:hidden p-4 border-b border-[var(--sidebar-border)] flex flex-col gap-4 bg-[var(--sidebar)] sticky top-0 z-10 transition-colors duration-300">
+                                <div className="flex justify-between items-center">
+                                    <Link href="/" className="font-bold text-lg text-[var(--text-primary)]">意安序</Link>
+                                    <div className="flex items-center gap-2">
+                                        <ThemeToggle />
+                                        <button className="p-2 hover:bg-[var(--text-secondary)]/5 rounded-lg text-[var(--text-secondary)]">
+                                            <Menu size={20} />
+                                        </button>
+                                    </div>
                                 </div>
+                                <Search />
                             </header>
                             <div className="container max-w-5xl py-12 px-6 md:px-12 transition-all">
                                 {children}

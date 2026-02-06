@@ -25,10 +25,9 @@ type Props = {
   params: Promise<Params>;
 };
 
-function getAllFiles(dirPath, arrayOfFiles) {
+function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
   const files = fs.readdirSync(dirPath);
-  arrayOfFiles = arrayOfFiles || [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     const fullPath = path.join(dirPath, file);
     if (fs.statSync(fullPath).isDirectory()) {
       arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
@@ -46,12 +45,13 @@ export async function generateStaticParams() {
   if (!fs.existsSync(contentDirectory)) return [];
   const filePaths = getAllFiles(contentDirectory);
   return filePaths.map((filePath) => {
-    const filename = path.basename(filePath);
+    const relativePath = path.relative(contentDirectory, filePath).replace(/\\/g, '/');
+    const pathSlug = relativePath.replace(/\.md$/, '');
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
-    
+
     return {
-      slug: data.slug || filename.replace(/\.md$/, '')
+      slug: data.slug || pathSlug
     };
   });
 }
@@ -62,10 +62,11 @@ async function getPostData(slug: string): Promise<PostData> {
   if (!fs.existsSync(contentDirectory)) throw new Error("Posts directory not found");
   const filePaths = getAllFiles(contentDirectory);
   const fullPath = filePaths.find(filePath => {
-    const fname = path.basename(filePath);
+    const relativePath = path.relative(contentDirectory, filePath).replace(/\\/g, '/');
+    const pathSlug = relativePath.replace(/\.md$/, '');
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
-    return (data.slug || fname.replace(/\.md$/, '')) === slug;
+    return (data.slug || pathSlug) === slug;
   });
 
   if (!fullPath) {
@@ -109,7 +110,7 @@ export default async function PostPage(props: { params: Promise<Params> }) {
       <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-900 mb-8 transition-colors">
         <ArrowLeft size={16} /> 返回首页
       </Link>
-      
+
       <main>
         <article className="prose prose-slate max-w-none prose-headings:text-slate-900 prose-p:text-slate-600 prose-a:text-blue-600">
           <header className="mb-12 space-y-4">
@@ -149,8 +150,8 @@ export default async function PostPage(props: { params: Promise<Params> }) {
           </button>
         </div>
         <div className="flex items-center gap-2 text-slate-400">
-           <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Share2 size={20} /></button>
-           <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Bookmark size={20} /></button>
+          <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Share2 size={20} /></button>
+          <button className="p-2 hover:bg-slate-50 rounded-full transition-colors"><Bookmark size={20} /></button>
         </div>
       </footer>
     </div>
