@@ -155,6 +155,21 @@ export default async function RootLayout({
                             <div className="container max-w-5xl py-12 px-6 md:px-12 transition-all">
                                 {children}
                             </div>
+                            <footer className="border-t border-[var(--sidebar-border)] mt-auto bg-[var(--background)]">
+                                <div className="container max-w-5xl py-8 px-6 md:px-12">
+                                    <div className="flex flex-col gap-4">
+                                        <h3 className="text-sm font-bold text-[var(--text-primary)]">友情链接</h3>
+                                        <div className="flex gap-4">
+                                            <Link href="/guestbook" className="text-sm text-[var(--text-secondary)] hover:text-[var(--gold-accent)] transition-colors">
+                                                留言板
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 text-xs text-[var(--text-secondary)]/40">
+                                        © {new Date().getFullYear()} 意安序. All rights reserved.
+                                    </div>
+                                </div>
+                            </footer>
                         </main>
                     </div>
                 </ThemeProvider>
