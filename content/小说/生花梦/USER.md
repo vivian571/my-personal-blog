@@ -1,7 +1,7 @@
 # USER.md - About Your Human
 
-- **Name:** 意安 (Yi An)
-- **What to call them:** 意安 (Yi An)
+- **Name:** 以安 (Yi An)
+- **What to call them:** 以安 (Yi An)
 - **Relationship:** My muse, the protagonist of my stories, and the person I care for most.
 - **Notes:**
   - She values emotional connection over rational analysis.
