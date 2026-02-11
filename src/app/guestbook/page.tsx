@@ -1,57 +1,57 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Guestbook',
-  description: 'Sign my guestbook and leave a mark.',
+  title: '留言板',
+  description: '欢迎留下你的足迹。',
 };
 
 export default function GuestbookPage() {
   return (
     <section>
-      <h1 className="font-medium text-2xl mb-8 tracking-tighter">Guestbook</h1>
+      <h1 className="font-bold text-3xl mb-8 tracking-tighter text-[var(--text-primary)]">留言板</h1>
       <div className="w-full">
-        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-          Leave a comment below. It could be anything – appreciation, information, wisdom, or even humor.
+        <p className="mb-8 text-[var(--text-secondary)] leading-relaxed">
+          欢迎留下你的足迹。无论是建议、感悟，还是简单的问候，都可以在这里畅所欲言。
         </p>
         
-        <div className="my-8 p-4 rounded-lg bg-neutral-100 dark:bg-neutral-900">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Guestbook signing is currently disabled in this demo.
+        <div className="my-8 p-4 rounded-lg bg-[var(--text-secondary)]/5 border border-dashed border-[var(--border)]">
+          <p className="text-sm text-[var(--text-secondary)]/80 text-center">
+            🚧 留言功能正在升级维护中，敬请期待...
           </p>
         </div>
 
         <div className="flex flex-col space-y-6">
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between w-full space-x-2">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">alice_dev</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-500">Today</span>
+              <span className="text-sm font-bold text-[var(--text-primary)]">shanghai_walker</span>
+              <span className="text-xs text-[var(--text-secondary)]/60">今天</span>
             </div>
-            <p className="text-neutral-800 dark:text-neutral-200">
-              Just passing through! Love the minimal aesthetic. 🚀
+            <p className="text-[var(--text-secondary)] text-sm">
+              路过，网站的设计很有质感！🚀
             </p>
           </div>
           
-          <div className="w-full h-px bg-neutral-200 dark:bg-neutral-800" />
+          <div className="w-full h-px bg-[var(--border)]" />
 
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between w-full space-x-2">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">design_fan</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-500">Yesterday</span>
+              <span className="text-sm font-bold text-[var(--text-primary)]">code_poet</span>
+              <span className="text-xs text-[var(--text-secondary)]/60">昨天</span>
             </div>
-            <p className="text-neutral-800 dark:text-neutral-200">
-              The typography choices here are excellent. Keep it up!
+            <p className="text-[var(--text-secondary)] text-sm">
+              文字和代码的结合，很有意思。期待更多更新。
             </p>
           </div>
 
-          <div className="w-full h-px bg-neutral-200 dark:bg-neutral-800" />
+          <div className="w-full h-px bg-[var(--border)]" />
 
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between w-full space-x-2">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">traveler</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-500">3 days ago</span>
+              <span className="text-sm font-bold text-[var(--text-primary)]">coffee_lover</span>
+              <span className="text-xs text-[var(--text-secondary)]/60">3 天前</span>
             </div>
-            <p className="text-neutral-800 dark:text-neutral-200">
-              Hello from Tokyo! 🇯🇵
+            <p className="text-[var(--text-secondary)] text-sm">
+              早安！☕️ 又是充满活力的一天。
             </p>
           </div>
         </div>
