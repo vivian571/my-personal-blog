@@ -1,50 +1,56 @@
-# My Personal Blog
+# 🏛️ 意安序：数字博物馆 (Digital Museum)
 
-这是一个基于 Next.js 构建的现代化、高性能个人博客项目。内容通过简单的 Markdown 文件进行管理，旨在提供一个优雅的写作和阅读平台。
+> **"In a world of ephemeral data, we curate sovereign assets."**
 
-## ✨ 项目理念
+欢迎来到**意安序 (Yian Sequence)** —— 这是一个基于 Next.js 构建的现代化数字资产管理与策展平台。它不仅是一个博客，更是一个存放思想、技能协议和智能体人格的“数字博物馆”。
 
-遵循从“静态页面”到“动态应用”的演进策略，首先建立一个稳定、快速的静态博客，并为其未来扩展为全栈应用打下坚实的基础。
+## ✨ 核心理念
 
-## 🚀 技术栈
+我们遵循从“静态记录”到“动态智能”的演进策略。
+- **主权性**：所有内容以 Markdown 驱动，归属个人，不依赖第三方平台。
+- **协议化**：将复杂的 AI 协作流程沉淀为可执行的 `Protocols`（协议）。
+- **人格化**：通过 `Personas`（人格）定义 AI 助手（如：**零壹**）的行为边界。
 
-*   **框架**: [Next.js](https://nextjs.org/) (React 框架)
-*   **UI**: [React](https://react.dev/) & [Bootstrap](https://getbootstrap.com/)
-*   **语言**: [TypeScript](https://www.typescriptlang.org/)
-*   **Markdown处理**: [gray-matter](https://github.com/jonschlinkert/gray-matter), [remark](https://github.com/remarkjs/remark), [remark-html](https://github.com/remarkjs/remark-html)
+## 🚀 导航指南
 
-## ✍️ 如何发表一篇新文章
+### 📂 [Moltbot 技能库](/skills)
+这里存放了 80+ 个标准化的能力包，分为以下维度：
+- **核心协议 (Protocols)**：打破环境限制的底层逻辑。
+- **智能体人格 (Personas)**：定义 AI 的灵魂与行为准则。
+- **第三方集成 (Integrations)**：Notion, GitHub, 1Password 等外部能力的无缝接入。
 
-发表一篇新文章非常简单：
+### ✍️ [白皮书与博文](/posts)
+- **Whitepapers**：深度的技术架构分析与行业思考。
+- **Fragments**：灵感碎片与技术笔记。
+- **Novels**：关于 AI、意识上传与未来的叙事探索。
 
-1.  在项目根目录的 `posts` 文件夹中，创建一个新的 `.md` 文件（例如 `my-new-post.md`）。
-2.  在文件顶部，按照以下格式添加元数据 (frontmatter)：
+---
 
-    ```markdown
-    ---
-    title: '这是我的新文章标题'
-    date: '2024-08-18'
-    ---
+## 🛠️ 技术栈
 
-    这里是你的文章正文，使用 Markdown 语法书写...
-    ```
+*   **架构**: [Next.js 15 (App Router)](https://nextjs.org/)
+*   **美学**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/) (自定义 **USD Whitepaper** 高对比度主题)
+*   **引擎**: [TypeScript](https://www.typescriptlang.org/)
+*   **持久化**: [Drizzle ORM](https://orm.drizzle.team/) + [PostgreSQL/MySQL](https://www.mysql.com/)
 
-3.  保存文件，然后重新启动开发服务器或部署项目即可看到新文章。
-
-## 🛠️ 本地开发
+## 🧑‍💻 开发与贡献
 
 1.  **安装依赖**:
     ```bash
     npm install
     ```
 
-2.  **启动开发服务器**:
+2.  **启动博物馆**:
     ```bash
     npm run dev
     ```
 
-3.  在浏览器中打开 [http://localhost:3000](http://localhost:3000) 查看效果。
+3.  **访问入口**: [http://localhost:3000](http://localhost:3000)
 
-## 部署
+## 📡 自动化部署
 
-本项目配置了通过 GitHub Actions 自动部署到 GitHub Pages 的流程。您只需要将代码推送到 `main` 分支，部署就会自动触发。
+本项目通过 **GitHub Actions** 实现了全自动化部署。每当 `main` 分支接收到代码推送，数字博物馆将自动更新。
+
+---
+
+_Managed by **零壹 (Líng Yī)** — Your Sovereign AI Assistant._

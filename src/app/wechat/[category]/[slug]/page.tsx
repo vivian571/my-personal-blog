@@ -7,12 +7,15 @@ import { Metadata } from 'next';
 import React from 'react';
 import { Share2, Bookmark, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ContentRenderer } from "@/components/ContentRenderer";
 
 interface PostData {
     title: string;
     date: string;
     contentHtml: string;
     slug: string;
+    isPaid: boolean;
+    price: number;
 }
 
 type Params = {
@@ -29,7 +32,9 @@ async function getPostData(category: string, slug: string): Promise<PostData> {
             title: "Asset Not Found",
             date: "",
             contentHtml: "<p>The requested asset logic is not available in the current vault.</p>",
-            slug: slug
+            slug: slug,
+            isPaid: false,
+            price: 0
         };
     }
 
@@ -53,7 +58,9 @@ async function getPostData(category: string, slug: string): Promise<PostData> {
         title: data.title || path.basename(filePath, '.md'),
         date: data.date || "Seed Asset",
         contentHtml,
-        slug: slug
+        slug: slug,
+        isPaid: data.isPaid === true || data.isPaid === "true",
+        price: parseInt(data.price || "0", 10),
     };
 }
 
@@ -90,9 +97,12 @@ export default async function WeChatArticlePage(props: { params: Promise<Params>
                 </div>
             </header>
 
-            <div
-                className="whitepaper-content"
-                dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
+            <ContentRenderer 
+                 contentHtml={postData.contentHtml} 
+                 isPaid={postData.isPaid} 
+                 price={postData.price} 
+                 articleId={postData.slug} 
+                 title={postData.title} 
             />
 
             <footer className="mt-20 pt-10 border-t border-[var(--border)] flex justify-between items-center text-[10px] text-[var(--text-secondary)]/40 font-bold uppercase tracking-widest">

@@ -15,6 +15,31 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
 
     const getChapters = (dir: string): any[] => {
         const items = fs.readdirSync(dir);
+        
+        const getFilesRecursively = (currentDir: string): any[] => {
+            const currentItems = fs.readdirSync(currentDir);
+            let results: any[] = [];
+            currentItems.forEach(item => {
+                const fullPath = path.join(currentDir, item);
+                const stats = fs.statSync(fullPath);
+                if (stats.isDirectory()) {
+                    if (!item.startsWith('.')) {
+                        results = results.concat(getFilesRecursively(fullPath));
+                    }
+                } else if (item.endsWith('.md') || item.endsWith('.txt')) {
+                    const content = fs.readFileSync(fullPath, "utf8");
+                    const { data } = matter(content);
+                    const relativePath = path.relative(bookPath, fullPath);
+                    results.push({
+                        name: data.title || item.replace(/\.(md|txt)$/, ""),
+                        slug: relativePath.replace(/\\/g, '/').replace(/\.(md|txt)$/, ""),
+                        type: 'file'
+                    });
+                }
+            });
+            return results;
+        };
+
         const list = items.map(item => {
             const fullPath = path.join(dir, item);
             const stats = fs.statSync(fullPath);
@@ -25,21 +50,20 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
                 return {
                     name: item,
                     type: 'directory',
-                    children: getChapters(fullPath)
+                    children: getFilesRecursively(fullPath)
                 };
             } else if (item.endsWith('.md') || item.endsWith('.txt')) {
                 const content = fs.readFileSync(fullPath, "utf8");
                 const { data } = matter(content);
                 return {
                     name: data.title || item.replace(/\.(md|txt)$/, ""),
-                    slug: relativePath.replace(/\.(md|txt)$/, ""),
+                    slug: relativePath.replace(/\\/g, '/').replace(/\.(md|txt)$/, ""),
                     type: 'file'
                 };
             }
             return null;
         }).filter(Boolean);
 
-        // Natural sort by name
         return list.sort((a, b) =>
             (a as any).name.localeCompare((b as any).name, undefined, { numeric: true, sensitivity: 'base' })
         );

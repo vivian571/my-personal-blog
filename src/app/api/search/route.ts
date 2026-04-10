@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { generateSearchIndex } from '@/lib/search';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const index = generateSearchIndex();

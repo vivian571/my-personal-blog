@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0 --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,12 +13,18 @@
     "deploy": "npm run build && git add . && git commit -m 'Update blog' && git push"
   },
   "dependencies": {
+    "@better-auth/utils": "^0.3.1",
+    "@libsql/client": "^0.17.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "crawlee": "^3.16.0",
+    "drizzle-orm": "^0.45.1",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.563.0",
     "next": "^16.1.6",
     "next-themes": "^0.4.6",
+    "playwright": "^1.58.2",
+    "postgres": "^3.4.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
@@ -34,10 +40,11 @@
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.24",
     "chokidar": "^3.5.3",
+    "drizzle-kit": "^0.31.9",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   }
 }

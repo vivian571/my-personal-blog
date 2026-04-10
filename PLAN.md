@@ -28,6 +28,12 @@
 - [ ] **RSS 订阅**: 生成 `feed.xml`，方便读者订阅更新。
 - [ ] **公众号联动**: 利用 `wechat-article-persona` 将博客精选内容转换为公众号推文风格。
 
+### 阶段四：价值变现与主权品牌 (2026 Q2)
+- [ ] **资产定价逻辑**: 在 `/skills` 页面实现“Premium/Free”资产分类，增加购买/订阅按钮占位。
+- [ ] **自动化情报站**: 基于 **[Hot Monitor Protocol](file:///Users/ax/Documents/GitHub/my-personal-blog/content/skills/hot-monitor-protocol.md)**，开发首个订阅制“AI 技术早报”自动化频道。
+- [ ] **二创外包链路**: 利用 **[AutoClip Protocol](file:///Users/ax/Documents/GitHub/my-personal-blog/content/skills/autoclip-protocol.md)** 尝试为首批 B 端客户提供自动高光提取服务。
+- [ ] **商业化白皮书落地**: 完善并执行 **[Sovereign Asset Monetization Strategy](file:///Users/ax/Documents/GitHub/my-personal-blog/content/fragments/monetization-strategy.md)**。
+
 ## 3. 技能包整合策略
 利用现有的 `content/skills/` 文件，将其作为博客的一个独特板块 "AI Skills"。
 - **自动化**: 编写脚本读取该目录下所有 `.md` 文件。

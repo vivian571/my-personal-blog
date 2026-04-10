@@ -8,6 +8,7 @@ import React from 'react';
 import { Share2, Bookmark, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { ContentRenderer } from "@/components/ContentRenderer";
 
 // 定义文章数据结构
 interface PostData {
@@ -15,6 +16,8 @@ interface PostData {
   date: string;
   contentHtml: string;
   slug: string;
+  isPaid: boolean;
+  price: number;
 }
 
 type Params = {
@@ -59,14 +62,33 @@ export async function generateStaticParams() {
 // 根据 slug 获取文章数据
 async function getPostData(slugArray: string[]): Promise<PostData> {
   const slug = decodeURIComponent(slugArray.join('/'));
+  const flatSlug = decodeURIComponent(slugArray[slugArray.length - 1]);
+
   if (!fs.existsSync(contentDirectory)) throw new Error("Posts directory not found");
   const filePaths = getAllFiles(contentDirectory);
   const fullPath = filePaths.find(filePath => {
     const relativePath = path.relative(contentDirectory, filePath).replace(/\\/g, '/');
     const pathSlug = relativePath.replace(/\.md$/, '');
+    const fileName = path.basename(filePath, '.md');
+    
     const fileContents = fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '');
     const { data } = matter(fileContents);
-    return (data.slug || pathSlug) === slug;
+    
+    const definedSlug = data.slug || pathSlug;
+    
+    // Smart Resolver:
+    // 1. Precise path match
+    // 2. Defined slug match
+    // 3. Filename match (flat slug)
+    // 4. Case-insensitive variations
+    return (
+      definedSlug === slug || 
+      pathSlug === slug || 
+      fileName === slug || 
+      definedSlug.toLowerCase() === slug.toLowerCase() ||
+      pathSlug.toLowerCase() === slug.toLowerCase() ||
+      fileName.toLowerCase() === flatSlug.toLowerCase()
+    );
   });
 
   if (!fullPath) {
@@ -87,6 +109,8 @@ async function getPostData(slugArray: string[]): Promise<PostData> {
     contentHtml,
     title: matterResult.data.title || matterResult.data.name || 'Untitled Post',
     date: matterResult.data.date ? matterResult.data.date.toString() : new Date().toISOString(),
+    isPaid: matterResult.data.isPaid === true || matterResult.data.isPaid === 'true',
+    price: parseInt(matterResult.data.price || "0", 10),
   };
 }
 
@@ -133,9 +157,12 @@ export default async function PostPage(props: { params: Promise<Params> }) {
             </div>
           </header>
 
-          <div
-            className="mt-8 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
+          <ContentRenderer 
+             contentHtml={postData.contentHtml} 
+             isPaid={postData.isPaid} 
+             price={postData.price} 
+             articleId={postData.slug} 
+             title={postData.title} 
           />
         </article>
       </main>

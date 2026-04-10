@@ -52,7 +52,28 @@ export function generateSearchIndex(): SearchResult[] {
         }
     }
 
-    // Scan specific subdirectories with their types
+    // 1. Scan root directory for top-level posts
+    if (fs.existsSync(contentDir)) {
+        const rootItems = fs.readdirSync(contentDir);
+        for (const item of rootItems) {
+            const fullPath = path.join(contentDir, item);
+            if (fs.statSync(fullPath).isFile() && item.endsWith(".md")) {
+                const fileContents = fs.readFileSync(fullPath, "utf8");
+                const { data, content } = matter(fileContents);
+                const slug = item.replace(/\.md$/, "");
+                
+                results.push({
+                    title: data.title || slug,
+                    slug: slug,
+                    category: data.category || "General",
+                    type: 'post',
+                    snippet: content.slice(0, 150).replace(/[#*`]/g, "").trim() + "..."
+                });
+            }
+        }
+    }
+
+    // 2. Scan specific subdirectories with their specialized types
     scan(path.join(contentDir, "小说"), 'book');
     scan(path.join(contentDir, "wechat"), 'post');
     scan(path.join(contentDir, "skills"), 'skill');
