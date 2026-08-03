@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import React from "react";
 import "./globals.css";
-import { Library, MessageSquareText, Box, Home, Archive, Tag, User, Menu, MessageCircle, Cpu, Search as SearchIcon, Sparkles, LogIn, Rss } from "lucide-react";
+import { Library, MessageSquareText, Box, Home, Archive, Tag, User, Menu, MessageCircle, Cpu, Search as SearchIcon, Sparkles, LogIn, Rss, Rocket } from "lucide-react";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
@@ -70,7 +70,8 @@ export default async function RootLayout({
                                     <div className="space-y-1">
                                         <NavItem href="/" icon={<Home size={18} />} label="首页" />
                                         <NavItem href="/archive" icon={<Archive size={18} />} label="归档" />
-                                        <NavItem href="/whitepapers" icon={<Sparkles size={18} className="text-[var(--gold-accent)]" />} label="Whitepapers" className="bg-[var(--gold-accent)]/5 text-[var(--gold-accent)] border border-[var(--gold-accent)]/10" />
+                                        <NavItem href="/venture" icon={<Rocket size={18} className="text-[var(--gold-accent)]" />} label="Venture 商业化" className="bg-[var(--gold-accent)]/5 text-[var(--gold-accent)] border border-[var(--gold-accent)]/10" />
+                                        <NavItem href="/whitepapers" icon={<Sparkles size={18} />} label="Whitepapers" />
                                     </div>
                                 </div>
 
