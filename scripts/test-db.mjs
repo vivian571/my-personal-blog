@@ -1,13 +1,25 @@
 import postgres from 'postgres';
+import fs from 'fs';
 
-const sql = postgres('postgresql://postgres.ynaipebxobelevsswupi:15066458562Y@aws-1-eu-west-1.pooler.supabase.com:6543/postgres', {
-  connect_timeout: 60,
+// Read .env.local manually to load variables
+const envLocalContent = fs.readFileSync('.env.local', 'utf8');
+const dbUrlMatch = envLocalContent.match(/DATABASE_URL=["']?([^"'\n]+)/);
+const connectionString = dbUrlMatch ? dbUrlMatch[1] : null;
+
+if (!connectionString) {
+  console.error('No DATABASE_URL found in .env.local');
+  process.exit(1);
+}
+
+console.log('Connecting to:', connectionString);
+const sql = postgres(connectionString, {
+  connect_timeout: 5,
 });
 
 async function test() {
   try {
-    const result = await sql`SELECT count(*) FROM "user"`;
-    console.log('Table "user" exists, count:', result);
+    const result = await sql`SELECT 1 as connected`;
+    console.log('Database connection successful:', result);
     process.exit(0);
   } catch (err) {
     console.error('Connection failed:', err);

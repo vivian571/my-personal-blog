@@ -3,15 +3,36 @@
 import Link from "next/link";
 import { ArrowRight, Lock, Mail, User, ShieldPlus, Github, Chrome } from "lucide-react";
 import { useState } from "react";
+import { signUp, signIn } from "@/lib/auth-client";
 
 export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
-        // Mock register
-        setTimeout(() => setIsLoading(false), 1500);
+        const formData = new FormData(e.currentTarget);
+        const name = formData.get("name") as string;
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+
+        try {
+            const { data, error } = await signUp.email({
+                email,
+                password,
+                name,
+                callbackURL: "/",
+            });
+
+            if (error) {
+                alert(error.message || "注册失败，请检查输入");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("注册发生异常");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -34,6 +55,7 @@ export default function RegisterPage() {
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]/30" size={18} />
                             <input 
                                 type="text" 
+                                name="name"
                                 placeholder="Your Name"
                                 className="w-full bg-[var(--background)] border border-[var(--border)] rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-[var(--gold-accent)]/50 transition-all"
                                 required
@@ -47,6 +69,7 @@ export default function RegisterPage() {
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]/30" size={18} />
                             <input 
                                 type="email" 
+                                name="email"
                                 placeholder="name@example.com"
                                 className="w-full bg-[var(--background)] border border-[var(--border)] rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-[var(--gold-accent)]/50 transition-all"
                                 required
@@ -60,6 +83,7 @@ export default function RegisterPage() {
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]/30" size={18} />
                             <input 
                                 type="password" 
+                                name="password"
                                 placeholder="••••••••"
                                 className="w-full bg-[var(--background)] border border-[var(--border)] rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:border-[var(--gold-accent)]/50 transition-all"
                                 required
@@ -87,10 +111,18 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <button className="flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--text-secondary)]/5 transition-all text-xs font-bold">
+                    <button 
+                        type="button"
+                        onClick={() => signIn.social({ provider: "github", callbackURL: "/" })}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--text-secondary)]/5 transition-all text-xs font-bold"
+                    >
                         <Github size={16} /> GitHub
                     </button>
-                    <button className="flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--text-secondary)]/5 transition-all text-xs font-bold">
+                    <button 
+                        type="button"
+                        onClick={() => signIn.social({ provider: "google", callbackURL: "/" })}
+                        className="flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--text-secondary)]/5 transition-all text-xs font-bold"
+                    >
                         <Chrome size={16} /> Google
                     </button>
                 </div>

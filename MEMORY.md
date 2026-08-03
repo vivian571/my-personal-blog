@@ -22,9 +22,15 @@
 - **Vibe**: Friendly, affectionate, and professional.
 
 ### Technical Stack
-- **Framework**: Next.js 15 (App Router).
+- **Framework**: Next.js 16 (App Router).
 - **Styling**: Tailwind CSS + Shadcn UI (modified with custom variables).
 - **Content**: Markdown-driven via `content/` and `posts/`.
+- **Database / Auth**: Drizzle ORM + PostgreSQL + Better-Auth.
+
+### Learnings & Development Experience (Ralph Loop Distillations)
+- **Local Postgres**: If the remote Supabase project `ynaipebxobelevsswupi` is offline, start OrbStack and run a local PostgreSQL container: `docker run -d --name local-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres postgres:16`.
+- **Drizzle-kit Env Loading**: Drizzle Kit CLI doesn't read `.env.local` by default. Provide `DATABASE_URL` inline when running pushes: `DATABASE_URL="..." npx drizzle-kit push`.
+- **Drizzle CLI command**: Use `npx drizzle-kit push` for version 0.31+.
 
 ---
-*Last Updated: 2026-02-19*
+*Last Updated: 2026-07-01*

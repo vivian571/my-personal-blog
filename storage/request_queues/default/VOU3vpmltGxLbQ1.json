@@ -1,0 +1,9 @@
+{
+	"id": "VOU3vpmltGxLbQ1",
+	"json": "{\"id\":\"VOU3vpmltGxLbQ1\",\"url\":\"https://example.com/hot-trends\",\"loadedUrl\":\"https://example.com/hot-trends\",\"uniqueKey\":\"https://example.com/hot-trends\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-06-08T06:33:36.698Z\"}",
+	"method": "GET",
+	"orderNo": null,
+	"retryCount": 0,
+	"uniqueKey": "https://example.com/hot-trends",
+	"url": "https://example.com/hot-trends"
+}
