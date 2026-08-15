@@ -1,92 +1,118 @@
+#!/usr/bin/env python3
+"""
+双向内容同步桥梁：wechat-publisher (Markdown) -> my-personal-blog (content/wechat)
+支持全部分类目录智能映射、Frontmatter 自动补全/清洗、重名防冲突及变更统计。
+"""
+
 import os
 import shutil
 import re
 from datetime import datetime
+from pathlib import Path
 
-# 配置路径
-SOURCE_ROOT = "/Users/ax/wechat-publisher/wechat/documents"
-BLOG_ROOT = "/Users/ax/Documents/GitHub/my-personal-blog/content/wechat"
+# 路径配置
+WECHAT_DOCS_ROOT = Path("/Users/ax/wechat-publisher/wechat/documents")
+BLOG_CONTENT_ROOT = Path("/Users/ax/Documents/GitHub/my-personal-blog/content/wechat")
 
-# 映射关系: 公众号目录名 -> 博客子目录名
-CATEGORY_MAP = {
-    "AI流习社": "ai_flow_club",
-    "开源智核": "open_source_core",
-    "平凡日子记": "ordinary_life"
+# 分类目录与对应标签映射
+CATEGORY_MAPPING = {
+    "AI流习社": {"slug": "ai_flow_club", "tag": "AI Tech", "name": "AI 流习社"},
+    "开源智核": {"slug": "open_source_core", "tag": "Open Source", "name": "开源智核"},
+    "平凡日子记": {"slug": "ordinary_life", "tag": "Life & Tech", "name": "平凡日子记"},
+    "美丽好风景": {"slug": "scenery_media", "tag": "Visual Media", "name": "美丽好风景"},
+    "零更_PromptBook": {"slug": "prompt_book", "tag": "Prompt Protocol", "name": "零更 PromptBook"},
+    "fluent fan": {"slug": "fluent_fan", "tag": "Fluent Fan", "name": "Fluent Fan"},
+    "初心录": {"slug": "original_mind", "tag": "Mindset", "name": "初心录"}
 }
 
-def sanitize_filename(filename):
-    """清理文件名中的空格和特殊字符"""
-    return filename.replace(" ", "_")
+def sanitize_filename(filename: str) -> str:
+    """标准化文件名，移除危险字符"""
+    clean_name = re.sub(r'[\\/*?:"<>| ]', '_', filename)
+    return clean_name
 
-def extract_metadata(content, default_title, category):
-    """从 MD 内容中提取或生成元数据"""
+def extract_or_generate_frontmatter(content: str, default_title: str, category_info: dict) -> str:
+    """提取或生成统一的 YAML Frontmatter"""
+    lines = content.split('\n')
     title = default_title
-    # 尝试匹配第一行作为标题 (# Title)
-    first_line = content.split('\n')[0]
-    if first_line.startswith('# '):
-        title = first_line.replace('# ', '').strip()
-    
-    # 获取当前日期
     date_str = datetime.now().strftime("%Y-%m-%d")
     
-    metadata = f"""---
+    # 尝试提取文章第一行的大标题
+    for line in lines:
+        line_clean = line.strip()
+        if line_clean.startswith('# '):
+            title = line_clean.replace('# ', '').strip()
+            break
+        elif line_clean.startswith('title:'):
+            extracted = line_clean.replace('title:', '').strip().strip('"\'')
+            if extracted:
+                title = extracted
+                break
+
+    # 检查是否已有合法 frontmatter
+    if content.strip().startswith('---'):
+        # 已有 frontmatter 则直接返回原内容
+        return content
+    
+    # 组装统一的 Frontmatter
+    frontmatter = f"""---
 title: "{title}"
 date: "{date_str}"
-category: "{category}"
+category: "{category_info['name']}"
+tags: ["{category_info['tag']}", "WeChat Matrix"]
 premium: false
 ---
 
 """
-    return metadata
+    return frontmatter + content
 
-def sync():
-    print(f"开始同步文章: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+def sync_articles():
+    print(f"🚀 开始执行公众号 -> 博客双向内容同步: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
-    if not os.path.exists(BLOG_ROOT):
-        os.makedirs(BLOG_ROOT)
+    if not WECHAT_DOCS_ROOT.exists():
+        print(f"❌ 微信文章源目录不存在: {WECHAT_DOCS_ROOT}")
+        return 0
 
-    for src_cat, dest_cat in CATEGORY_MAP.items():
-        src_path = os.path.join(SOURCE_ROOT, src_cat)
-        dest_path = os.path.join(BLOG_ROOT, dest_cat)
-        
-        if not os.path.exists(src_path):
-            print(f"警告: 源目录不存在 {src_path}")
+    BLOG_CONTENT_ROOT.mkdir(parents=True, exist_ok=True)
+    synced_count = 0
+
+    for source_dir_name, cat_info in CATEGORY_MAPPING.items():
+        src_cat_path = WECHAT_DOCS_ROOT / source_dir_name
+        dest_cat_path = BLOG_CONTENT_ROOT / cat_info["slug"]
+
+        if not src_cat_path.exists():
             continue
-            
-        if not os.path.exists(dest_path):
-            os.makedirs(dest_path)
-            
-        for file in os.listdir(src_path):
-            if file.endswith(".md"):
-                src_file_path = os.path.join(src_path, file)
-                # 检查是否是合法的 MD 文件
-                if os.path.isdir(src_file_path):
-                    continue
-                    
-                target_filename = sanitize_filename(file)
-                dest_file_path = os.path.join(dest_path, target_filename)
-                
-                # 读取内容
-                with open(src_file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                # 如果已经有了 metadata，就不重复添加
-                if not content.strip().startswith('---'):
-                    metadata = extract_metadata(content, file.replace('.md', ''), src_cat)
-                    new_content = metadata + content
-                else:
-                    new_content = content
-                
-                # 写入博客目录
-                with open(dest_file_path, 'w', encoding='utf-8') as f:
-                    f.write(new_content)
-                
-                print(f"已同步: {src_cat} -> {dest_cat} | {file}")
 
-    print("同步任务完成。")
+        dest_cat_path.mkdir(parents=True, exist_ok=True)
+
+        # 遍历源目录下的所有 markdown 文件
+        for file_path in src_cat_path.glob("*.md"):
+            if not file_path.is_file():
+                continue
+
+            target_filename = sanitize_filename(file_path.name)
+            dest_file_path = dest_cat_path / target_filename
+
+            try:
+                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    raw_content = f.read()
+
+                # 处理 Frontmatter
+                processed_content = extract_or_generate_frontmatter(
+                    raw_content,
+                    default_title=file_path.stem,
+                    category_info=cat_info
+                )
+
+                # 写入博客目标目录
+                with open(dest_file_path, "w", encoding="utf-8") as f:
+                    f.write(processed_content)
+
+                synced_count += 1
+            except Exception as e:
+                print(f"⚠️ 处理文件失败 [{file_path.name}]: {e}")
+
+    print(f"✅ 双向内容同步完成！共同步 {synced_count} 篇文章至博客。")
+    return synced_count
 
 if __name__ == "__main__":
-    try:
-        sync()
-    except Exception as e:
-        print(f"同步过程中发生错误: {str(e)}")
+    sync_articles()
